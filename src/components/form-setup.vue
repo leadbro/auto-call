@@ -2,12 +2,31 @@
   <form id="form-setup">
     <div class="columns">
       <div class="column">
-        <b-field label="Название проекта">
-          <b-input
-            placeholder="Введите название проекта*"
-            v-model="project_name"
-          />
-        </b-field>
+        <div class="field">
+          <label class="label">
+            Название проекта
+            <b-tooltip
+              label="Введите название проекта"
+              position="is-right"
+            >
+              <b-icon
+                pack="mdi"
+                type="is-dark"
+                icon="help-circle"
+                size="is-small"
+              />
+            </b-tooltip>
+          </label>
+          <b-field
+            :type="{ 'is-danger': !isProjectNameValid }"
+          >
+            <b-input
+              placeholder="Введите название проекта*"
+              v-model="project_name"
+              id="project_name"
+            />
+          </b-field>
+        </div>
 
         <b-field label="Выберите базу для обзвона">
           <b-select
@@ -107,6 +126,7 @@
                 class="is-fullwidth"
                 icon="phone-plus"
                 v-model="callback_count"
+                id="callback_count"
               >
                 <option
                   v-for="item in callback_counts"
@@ -130,6 +150,7 @@
                 icon="timer"
                 v-model="callback_interval"
                 :disabled="isIntervalDisabled"
+                id="select_interval"
               >
                 <option
                   v-for="item in intervals"
@@ -166,6 +187,7 @@
         type="is-success"
         outlined
         @click="onSave"
+        id="button_save"
       >
         Сохранить
       </b-button>
@@ -197,6 +219,7 @@
         i_delay: false,
         record_audio: false,
         record_text: false,
+        isProjectNameValid: true,
         callbases: [
           {
             id: 0,
@@ -277,41 +300,50 @@
       },
     },
     methods: {
-      async onSave() {
-        try {
-          /*
-          Представим, что запрос удался
+      validate() {
+        return this.project_name.length > 3
+      },
+      onSave() {
+        this.isProjectNameValid = false
 
-          const response = await fetch('/api/save-form', {
-            method: 'POST',
-            body: JSON.stringify(this.getFormData),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
+        if (this.validate()) {
+          this.isProjectNameValid = true
 
-          const json = await response.json()*/
+          try {
+            /*
+            Представим, что запрос удался
 
-          /* Показываем уведомление, что всё получилось */
-          this.$buefy.notification.open({
-            message: 'Настройки успешно сохранены',
-            type: 'is-success',
-            position: 'is-bottom-right'
-          })
-        } catch(e) {
-          /* Показываем уведомление об ошибке */
-          this.$buefy.notification.open({
-            message: e,
-            type: 'is-danger',
-            position: 'is-bottom-right'
-          })
+            const response = await fetch('/api/save-form', {
+              method: 'POST',
+              body: JSON.stringify(this.getFormData),
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+
+            const json = await response.json()*/
+
+            /* Показываем уведомление, что всё получилось */
+            this.$buefy.notification.open({
+              message: 'Настройки успешно сохранены',
+              type: 'is-success',
+              position: 'is-bottom-right'
+            })
+          } catch(e) {
+            /* Показываем уведомление об ошибке */
+            this.$buefy.notification.open({
+              message: e,
+              type: 'is-danger',
+              position: 'is-bottom-right'
+            })
+          }
         }
       }
     }
   }
 </script>
 
-<style scoped>
+<style>
   .control.is-fullwidth {
     display: block;
 
